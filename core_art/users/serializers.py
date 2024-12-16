@@ -1,8 +1,28 @@
 from rest_framework import serializers
 from .models import User
 from django.core.exceptions import ValidationError
+from django.utils.timezone import now, timedelta
 
+# OTP
+class OTPSerializer(serializers.Serializer):
+    mobile = serializers.CharField(max_length=15)
 
+    def validate_mobile(self, mobile):
+        if not User.objects.filter(mobile=mobile).exists():
+            User.objects.create_user(mobile=mobile)
+        return mobile
+
+# Verify otp
+class VerifyOTPSerializer(serializers.Serializer):
+    mobile = serializers.CharField(max_length=15)
+    otp = serializers.CharField(max_length=6)
+
+    def validate(self, data):
+        user = User.objects.filter(mobile=data['mobile'], otp=data['otp']).first()
+        if not user or user.otp_created_at < now() - timedelta(minutes=10):
+            raise serializers.ValidationError("Invalid or expired OTP")
+        return data
+    
 # User Registering serializer
 class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
