@@ -6,9 +6,9 @@ urlpatterns = [
     # Users app
     path('users/', include('users.urls')),
     # Products app
-    path('products/', include('users.urls')),
+    path('products/', include('products.urls')),
     # Orders app
-    path('orders/', include('users.urls')),
+    path('orders/', include('orders.urls')),
 
 
 
