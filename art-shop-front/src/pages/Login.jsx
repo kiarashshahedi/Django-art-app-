@@ -1,52 +1,49 @@
 import React, { useState } from 'react';
-import { login } from '../services/api';
+import axios from 'axios';
 
 const Login = () => {
-  const [mobile, setMobile] = useState('');
-  const [otp, setOtp] = useState('');
-  const [isOTPRequested, setIsOTPRequested] = useState(false);
+    const [mobile, setMobile] = useState('');
+    const [otp, setOTP] = useState('');
+    const [step, setStep] = useState(1);
 
-  const handleRequestOTP = async () => {
-    try {
-      await login({ mobile });
-      setIsOTPRequested(true);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+    const handleGenerateOTP = async () => {
+        const response = await axios.post('/api/users/generate-otp/', { mobile });
+        if (response.status === 200) setStep(2);
+    };
 
-  const handleVerifyOTP = async () => {
-    try {
-      const response = await login({ mobile, otp });
-      localStorage.setItem('token', response.data.access);
-      window.location.href = '/';
-    } catch (err) {
-      console.error(err);
-    }
-  };
+    const handleVerifyOTP = async () => {
+        const response = await axios.post('/api/users/verify-otp/', { mobile, otp });
+        if (response.status === 200) {
+            localStorage.setItem('access_token', response.data.access);
+            alert('Logged in successfully!');
+        }
+    };
 
-  return (
-    <div>
-      <h2>Login</h2>
-      <input
-        type="text"
-        placeholder="Mobile"
-        value={mobile}
-        onChange={(e) => setMobile(e.target.value)}
-      />
-      {isOTPRequested && (
-        <input
-          type="text"
-          placeholder="OTP"
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-        />
-      )}
-      <button onClick={isOTPRequested ? handleVerifyOTP : handleRequestOTP}>
-        {isOTPRequested ? 'Verify OTP' : 'Request OTP'}
-      </button>
-    </div>
-  );
+    return (
+        <div>
+            {step === 1 ? (
+                <>
+                    <input 
+                        type="text" 
+                        placeholder="Mobile" 
+                        value={mobile} 
+                        onChange={(e) => setMobile(e.target.value)} 
+                    />
+                    <button onClick={handleGenerateOTP}>Send OTP</button>
+                </>
+            ) : (
+                <>
+                    <input 
+                        type="text" 
+                        placeholder="Enter OTP" 
+                        value={otp} 
+                        onChange={(e) => setOTP(e.target.value)} 
+                    />
+                    <button onClick={handleVerifyOTP}>Verify OTP</button>
+                </>
+            )}
+        </div>
+    );
 };
 
 export default Login;

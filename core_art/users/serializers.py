@@ -12,6 +12,7 @@ class OTPSerializer(serializers.Serializer):
             User.objects.create_user(mobile=mobile)
         return mobile
 
+
 # Verify otp
 class VerifyOTPSerializer(serializers.Serializer):
     mobile = serializers.CharField(max_length=15)
@@ -22,7 +23,8 @@ class VerifyOTPSerializer(serializers.Serializer):
         if not user or user.otp_created_at < now() - timedelta(minutes=10):
             raise serializers.ValidationError("Invalid or expired OTP")
         return data
-    
+
+
 # User Registering serializer
 class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -41,3 +43,17 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+    
+
+# Buyer Profile Serializer
+class BuyerProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'mobile', 'is_buyer']
+
+
+# Seller Profile Serializer
+class SellerProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'mobile', 'is_seller']
