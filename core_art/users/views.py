@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.exceptions import ValidationError
 import random
-from .serializers import UserRegistrationSerializer, OTPSerializer, VerifyOTPSerializer
+from .serializers import UserRegistrationSerializer, OTPSerializer, VerifyOTPSerializer, SellerProfileSerializer, BuyerProfileSerializer
 from .models import User
 from django.utils.timezone import now, timedelta
 
